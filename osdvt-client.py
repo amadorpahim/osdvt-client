@@ -90,7 +90,7 @@ class Principal:
 				a["f"] = ""
 			args = " ".join([ "-%s %s"%(i,a[i]) for i in a.keys() ])
 	                #cmnd = "spicec %s &"%args
-	                cmnd = "spicy %s &"%args
+	                cmnd = "sudo spicy %s &"%args
 			#print cmnd
 	                os.system( cmnd )
 
