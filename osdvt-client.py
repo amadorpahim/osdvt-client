@@ -23,6 +23,7 @@ import gtk
 import gtk.glade
 import gobject
 import os
+import subprocess
 import socket
 import fcntl
 import struct
@@ -32,6 +33,8 @@ pygtk.require("2.0")
 
 port = 6970
 cacert = os.getenv('HOME')+"/osdvt/cacert.pem"
+spice_client = "/usr/bin/spicy"
+vnc_client = "/usr/bin/vinagre"
 
 def quit(*args, **kwargs):
 	global VarSaida
@@ -51,7 +54,6 @@ class Principal:
 
 		ssl_sock.connect((self._server, self._port))
 		ssl_sock.write( "KILL " + cmb_main_vms.get_active_text() + " " + self._token)
-		#print ssl_sock.read()
 		ssl_sock.close()
 		s.close()
 	
@@ -82,18 +84,27 @@ class Principal:
 		s.close()
 
 		if data.split()[0] != "ERR":
-			a = {}
-			a["h"] = self._server
-			a["p"] = data.split()[0]
-			a["w"] = data.split()[1]
-			if checkbutton1.get_active():
-				a["f"] = ""
-			args = " ".join([ "-%s %s"%(i,a[i]) for i in a.keys() ])
-	                #cmnd = "spicec %s &"%args
-	                cmnd = "sudo spicy %s &"%args
-			#print cmnd
-	                os.system( cmnd )
+			cmnd = []
+			if data.split()[0] == "0":
+		                cmnd.append(spice_client)
+		                cmnd.append("-h") 
+		                cmnd.append("%s" % (self._server)) 
+		                cmnd.append("-p") 
+		                cmnd.append("%s" % (data.split()[1])) 
+		                cmnd.append("-w") 
+		                cmnd.append("%s" % (data.split()[2])) 
 
+				if checkbutton1.get_active():
+					cmnd.append("-f")
+
+			if data.split()[0] == "1":
+		                cmnd.append(vnc_client)
+		                cmnd.append("%s:%s" % (self._server,int(data.split()[1])%5900)) 
+
+				if checkbutton1.get_active():
+					cmnd.append("-f")
+
+			subprocess.Popen(cmnd)
 
 	def status(self, sta_main, cmb_main_vms, btn_main_start, btn_main_kill, btn_main_connect, btn_main_refresh,checkbutton1):
 		if cmb_main_vms.get_active_text() and cmb_main_vms.get_active_text() != "VM not found": 
