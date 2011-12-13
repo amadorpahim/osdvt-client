@@ -86,6 +86,7 @@ class Principal:
 		if data.split()[0] != "ERR":
 			cmnd = []
 			if data.split()[0] == "0":
+		                cmnd.append("sudo")
 		                cmnd.append(spice_client)
 		                cmnd.append("-h") 
 		                cmnd.append("%s" % (self._server)) 
@@ -131,6 +132,7 @@ class Principal:
 					btn_main_kill.set_sensitive(False)
 					btn_main_connect.set_sensitive(False)
 					sta_main.push(0,"Server was restarted. Please click 'Refresh'.")
+					
 
 				else:
 					if data == "True":
