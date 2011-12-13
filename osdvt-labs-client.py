@@ -22,12 +22,17 @@ import struct
 import socket
 import ssl
 import sys
+import subprocess
 from dialog import Dialog
 
-LocalInterface = "eth0"
-Server = "osdvt.ucs.br"
+LocalInterface = "br0"
+Server = "localhost"
 ServerPort = 6970
 EnableShutdown = False
+spice_client = "/usr/bin/spicy"
+vnc_client = "/usr/bin/vinagre"
+# sudo is necessary to usb_redir
+EnableSudo = True
 
 cacert = os.getenv('HOME')+"/osdvt/cacert.pem"
 
@@ -85,7 +90,6 @@ class Principal:
 			return "ERR: Stopped."
 
 	def ligar(self, vm, token):
-
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 ssl_sock = ssl.wrap_socket(s,
 			ca_certs=cacert,
@@ -99,7 +103,6 @@ class Principal:
 		return data
 
 	def conectar(self, vm, token):
-
             	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 ssl_sock = ssl.wrap_socket(s,
                         ca_certs=cacert,
@@ -112,16 +115,28 @@ class Principal:
                 ssl_sock.close()
 		s.close()
 
+                if data.split()[0] != "ERR":
+                        cmnd = []
+                        if data.split()[0] == "0":
 
-		if data.split()[0] != "ERR":
-			a = {}
-			a["h"] = Server
-			a["p"] = data.split()[0]
-			a["w"] = data.split()[1]
-#			a["f"] = ""
-			args = " ".join([ "-%s %s"%(i,a[i]) for i in a.keys() ])
-	                cmnd = "spicec %s "%args
-	                os.system( cmnd )
+				if EnableSudo:
+	                                cmnd.append("sudo")
+
+                                cmnd.append(spice_client)
+                                cmnd.append("-h")
+                                cmnd.append("%s" % (Server))
+                                cmnd.append("-p")
+                                cmnd.append("%s" % (data.split()[1]))
+                                cmnd.append("-w")
+                                cmnd.append("%s" % (data.split()[2]))
+				cmnd.append("-f")
+
+                        if data.split()[0] == "1":
+                                cmnd.append(vnc_client)
+                                cmnd.append("%s:%s" % (Server,int(data.split()[1])%5900))
+				cmnd.append("-f")
+
+                        subprocess.call(cmnd)
 
 def main():
 	while True:
@@ -134,7 +149,7 @@ def main():
 		window = Dialog()
 
 		if result.split()[0] == "ERR:":
-			varcontrole = window.yesno("No VMs found. Refresh?")
+			varcontrole = window.yesno("VM not found. Refresh?")
 			if varcontrole != 0:
 				sys.exit(1)
 		else:

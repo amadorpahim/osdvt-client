@@ -35,6 +35,9 @@ port = 6970
 cacert = os.getenv('HOME')+"/osdvt/cacert.pem"
 spice_client = "/usr/bin/spicy"
 vnc_client = "/usr/bin/vinagre"
+# sudo is necessary to usb_redir
+EnableSudo = True
+
 
 def quit(*args, **kwargs):
 	global VarSaida
@@ -86,7 +89,10 @@ class Principal:
 		if data.split()[0] != "ERR":
 			cmnd = []
 			if data.split()[0] == "0":
-		                cmnd.append("sudo")
+
+                                if EnableSudo:
+                                        cmnd.append("sudo")
+
 		                cmnd.append(spice_client)
 		                cmnd.append("-h") 
 		                cmnd.append("%s" % (self._server)) 
