@@ -30,6 +30,7 @@ Server = "localhost"
 ServerPort = 6970
 EnableShutdown = False
 spice_client = "/usr/bin/spicy"
+old_spice_client = "/usr/bin/spicec"
 vnc_client = "/usr/bin/vinagre"
 # sudo is necessary to usb_redir
 EnableSudo = True
@@ -117,24 +118,37 @@ class Principal:
 
                 if data.split()[0] != "ERR":
                         cmnd = []
-                        if data.split()[0] == "0":
 
-				if EnableSudo:
-	                                cmnd.append("sudo")
+                        if data.split().__len__() is 3:
 
-                                cmnd.append(spice_client)
+                                if data.split()[2] == "0":
+
+                                        if EnableSudo:
+                                                cmnd.append("sudo")
+
+                                        cmnd.append(spice_client)
+                                        cmnd.append("-h")
+                                        cmnd.append("%s" % (Server))
+                                        cmnd.append("-p")
+                                        cmnd.append("%s" % (data.split()[0]))
+                                        cmnd.append("-w")
+                                        cmnd.append("%s" % (data.split()[1]))
+					cmnd.append("-f")
+
+                                if data.split()[2] == "1":
+                                        cmnd.append(vnc_client)
+                                        cmnd.append("%s:%s" % (Server,int(data.split()[0])%5900))
+					cmnd.append("-f")
+
+                        else:
+                                cmnd.append(old_spice_client)
                                 cmnd.append("-h")
-                                cmnd.append("%s" % (Server))
+                                cmnd.append("%s" % (self._server))
                                 cmnd.append("-p")
-                                cmnd.append("%s" % (data.split()[1]))
+                                cmnd.append("%s" % (data.split()[0]))
                                 cmnd.append("-w")
-                                cmnd.append("%s" % (data.split()[2]))
-				cmnd.append("-f")
-
-                        if data.split()[0] == "1":
-                                cmnd.append(vnc_client)
-                                cmnd.append("%s:%s" % (Server,int(data.split()[1])%5900))
-				cmnd.append("-f")
+                                cmnd.append("%s" % (data.split()[1]))
+                                cmnd.append("-f")
 
                         subprocess.call(cmnd)
 

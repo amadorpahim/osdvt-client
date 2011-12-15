@@ -34,6 +34,7 @@ pygtk.require("2.0")
 port = 6970
 cacert = os.getenv('HOME')+"/osdvt/cacert.pem"
 spice_client = "/usr/bin/spicy"
+old_spice_client = "/usr/bin/spicec"
 vnc_client = "/usr/bin/vinagre"
 # sudo is necessary to usb_redir
 EnableSudo = True
@@ -88,29 +89,44 @@ class Principal:
 
 		if data.split()[0] != "ERR":
 			cmnd = []
-			if data.split()[0] == "0":
 
-                                if EnableSudo:
-                                        cmnd.append("sudo")
+			if data.split().__len__() is 3:
 
-		                cmnd.append(spice_client)
-		                cmnd.append("-h") 
-		                cmnd.append("%s" % (self._server)) 
-		                cmnd.append("-p") 
-		                cmnd.append("%s" % (data.split()[1])) 
-		                cmnd.append("-w") 
-		                cmnd.append("%s" % (data.split()[2])) 
+				if data.split()[2] == "0":
+
+					if EnableSudo:
+						cmnd.append("sudo")
+	
+					cmnd.append(spice_client)
+					cmnd.append("-h") 
+					cmnd.append("%s" % (self._server)) 
+					cmnd.append("-p") 
+					cmnd.append("%s" % (data.split()[0])) 
+					cmnd.append("-w") 
+					cmnd.append("%s" % (data.split()[1])) 
+		
+					if checkbutton1.get_active():
+						cmnd.append("-f")
+	
+				if data.split()[2] == "1":
+					cmnd.append(vnc_client)
+					cmnd.append("%s:%s" % (self._server,int(data.split()[0])%5900)) 
+
+					if checkbutton1.get_active():
+						cmnd.append("-f")
+		
+			else:
+				cmnd.append(old_spice_client)
+				cmnd.append("-h")
+				cmnd.append("%s" % (self._server))
+				cmnd.append("-p")
+				cmnd.append("%s" % (data.split()[0]))
+				cmnd.append("-w")
+				cmnd.append("%s" % (data.split()[1]))
 
 				if checkbutton1.get_active():
 					cmnd.append("-f")
-
-			if data.split()[0] == "1":
-		                cmnd.append(vnc_client)
-		                cmnd.append("%s:%s" % (self._server,int(data.split()[1])%5900)) 
-
-				if checkbutton1.get_active():
-					cmnd.append("-f")
-
+					
 			subprocess.Popen(cmnd)
 
 	def status(self, sta_main, cmb_main_vms, btn_main_start, btn_main_kill, btn_main_connect, btn_main_refresh,checkbutton1):
