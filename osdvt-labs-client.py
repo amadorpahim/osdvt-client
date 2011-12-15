@@ -143,7 +143,7 @@ class Principal:
                         else:
                                 cmnd.append(old_spice_client)
                                 cmnd.append("-h")
-                                cmnd.append("%s" % (self._server))
+                                cmnd.append("%s" % (Server))
                                 cmnd.append("-p")
                                 cmnd.append("%s" % (data.split()[0]))
                                 cmnd.append("-w")
