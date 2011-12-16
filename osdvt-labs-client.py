@@ -23,6 +23,7 @@ import socket
 import ssl
 import sys
 import subprocess
+import time
 from dialog import Dialog
 
 LocalInterface = "br0"
@@ -182,6 +183,7 @@ def main():
 				result = vms.ligar(vm, token)
 
 			result = vms.conectar(vm, token)	
+			time.sleep(2)
 
 			if EnableShutdown:
 				shutdown = []
