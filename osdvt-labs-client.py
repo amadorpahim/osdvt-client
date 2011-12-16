@@ -182,8 +182,18 @@ def main():
 				result = vms.ligar(vm, token)
 
 			result = vms.conectar(vm, token)	
+
 			if EnableShutdown:
-				os.system("shutdown now -h")
+				shutdown = []
+
+				if EnableSudo:
+					shutdown.append("sudo")
+
+				shutdown.append("shutdown")
+				shutdown.append("-h")
+				shutdown.append("now")
+
+				subprocess.call(shutdown)
                                 sys.exit(1)
 
 
