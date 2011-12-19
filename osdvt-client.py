@@ -177,12 +177,13 @@ class Principal:
 						btn_main_kill.set_sensitive(False)
 						btn_main_connect.set_sensitive(False)
 			
-					
-					lab_Smp.set_text(data.split()[1])
-					lab_Memory.set_text(data.split()[2])
-					lab_Video.set_text(data.split()[3])
-					lab_Bits.set_text(data.split()[4])
-					lab_Os.set_text(data.split()[5])
+					if data.split().__len__() > 1:
+						lab_Smp.set_text(data.split()[1])
+						lab_Memory.set_text(data.split()[2])
+						lab_Video.set_text(data.split()[3])
+						lab_Bits.set_text(data.split()[4])
+						lab_Os.set_text(data.split()[5])
+
 					sta_main.push(0,cmb_main_vms.get_active_text()+" - "+status_vm)
 			except:
 				checkbutton1.set_sensitive(False)
