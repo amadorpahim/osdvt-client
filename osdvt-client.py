@@ -129,7 +129,7 @@ class Principal:
 					
 			subprocess.Popen(cmnd)
 
-	def status(self, sta_main, cmb_main_vms, btn_main_start, btn_main_kill, btn_main_connect, btn_main_refresh,checkbutton1):
+	def status(self, sta_main, cmb_main_vms, btn_main_start, btn_main_kill, btn_main_connect, btn_main_refresh,checkbutton1,lab_Smp,lab_Memory,lab_Video,lab_Bits,lab_Os):
 		if cmb_main_vms.get_active_text() and cmb_main_vms.get_active_text() != "VM not found": 
 			try:	
 				s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -157,7 +157,7 @@ class Principal:
 					
 
 				else:
-					if data == "True":
+					if data.split()[0] == "True":
 						status_vm = "Running"
 	
 						checkbutton1.set_sensitive(True)
@@ -177,6 +177,12 @@ class Principal:
 						btn_main_kill.set_sensitive(False)
 						btn_main_connect.set_sensitive(False)
 			
+					
+					lab_Smp.set_text(data.split()[1])
+					lab_Memory.set_text(data.split()[2])
+					lab_Video.set_text(data.split()[3])
+					lab_Bits.set_text(data.split()[4])
+					lab_Os.set_text(data.split()[5])
 					sta_main.push(0,cmb_main_vms.get_active_text()+" - "+status_vm)
 			except:
 				checkbutton1.set_sensitive(False)
@@ -195,14 +201,14 @@ class Principal:
 
 
 	
-	def status2(self, sta_main, cmb_main_vms, btn_main_start, btn_main_kill, btn_main_connect, btn_main_refresh,checkbutton1):
+	def status2(self, sta_main, cmb_main_vms, btn_main_start, btn_main_kill, btn_main_connect, btn_main_refresh,checkbutton1,lab_Smp,lab_Memory,lab_Video,lab_Bits,lab_Os):
 		global VarSaida
 		while VarSaida:
-			self.status(sta_main, cmb_main_vms, btn_main_start, btn_main_kill, btn_main_connect, btn_main_refresh,checkbutton1)
+			self.status(sta_main, cmb_main_vms, btn_main_start, btn_main_kill, btn_main_connect, btn_main_refresh,checkbutton1,lab_Smp,lab_Memory,lab_Video,lab_Bits,lab_Os)
 			time.sleep(0.4)
 
 
-	def auth(self, func, ent_auth_user, ent_auth_pass, ent_auth_server, window1, window2, sta_auth, sta_main, cmb_main_vms, btn_main_start, btn_main_kill, btn_main_connect, liststore, btn_main_refresh, checkbutton1):
+	def auth(self, func, ent_auth_user, ent_auth_pass, ent_auth_server, window1, window2, sta_auth, sta_main, cmb_main_vms, btn_main_start, btn_main_kill, btn_main_connect, liststore, btn_main_refresh, checkbutton1,lab_Smp,lab_Memory,lab_Video,lab_Bits,lab_Os):
 		try:
 	                self._server=ent_auth_server.get_text()
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -220,7 +226,7 @@ class Principal:
 				window2.show()
 				self._token = data.split()[1]
 				self.procurar(self.procurar, ent_auth_user, cmb_main_vms, liststore)
-				t = Thread(target=self.status2, kwargs=dict(sta_main=sta_main,cmb_main_vms=cmb_main_vms,btn_main_start=btn_main_start,btn_main_kill=btn_main_kill,btn_main_connect=btn_main_connect,btn_main_refresh=btn_main_refresh,checkbutton1=checkbutton1))
+				t = Thread(target=self.status2, kwargs=dict(sta_main=sta_main,cmb_main_vms=cmb_main_vms,btn_main_start=btn_main_start,btn_main_kill=btn_main_kill,btn_main_connect=btn_main_connect,btn_main_refresh=btn_main_refresh,checkbutton1=checkbutton1,lab_Smp=lab_Smp,lab_Memory=lab_Memory,lab_Video=lab_Video,lab_Bits=lab_Bits,lab_Os=lab_Os))
 				t.start()
 			else:
 				sta_auth.push(0,data)
@@ -269,6 +275,12 @@ class Principal:
                 ent_auth_server=self.wTree.get_widget("entry3")
                 sta_auth=self.wTree.get_widget("statusbar1")
                 sta_main=self.wTree.get_widget("statusbar2")
+
+		lab_Smp=self.wTree.get_widget("label7")
+		lab_Memory=self.wTree.get_widget("label9")
+		lab_Video=self.wTree.get_widget("label11")
+		lab_Bits=self.wTree.get_widget("label13")
+		lab_Os=self.wTree.get_widget("label15")
 		
 		btn_main_refresh=self.wTree.get_widget("button3")
 		btn_main_start=self.wTree.get_widget("button4")
@@ -290,7 +302,7 @@ class Principal:
 		btn_main_connect.connect( "clicked", self.conectar, cmb_main_vms, checkbutton1)
 
 		
-		btn_auth_ok.connect( "clicked", self.auth, ent_auth_user, ent_auth_pass, ent_auth_server, self.window1, self.window2, sta_auth, sta_main, cmb_main_vms, btn_main_start, btn_main_kill, btn_main_connect, liststore, btn_main_refresh, checkbutton1)
+		btn_auth_ok.connect( "clicked", self.auth, ent_auth_user, ent_auth_pass, ent_auth_server, self.window1, self.window2, sta_auth, sta_main, cmb_main_vms, btn_main_start, btn_main_kill, btn_main_connect, liststore, btn_main_refresh, checkbutton1,lab_Smp,lab_Memory,lab_Video,lab_Bits,lab_Os)
 		btn_auth_cancel.connect( "clicked", quit)
 
 
