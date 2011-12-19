@@ -26,8 +26,8 @@ import subprocess
 import time
 from dialog import Dialog
 
-LocalInterface = "br0"
-Server = "localhost"
+LocalInterface = "em1"
+Server = "osdvtserver.example.com"
 ServerPort = 6970
 EnableShutdown = False
 spice_client = "/usr/bin/spicy"
