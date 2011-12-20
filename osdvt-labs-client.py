@@ -193,7 +193,7 @@ def main():
 				result = vms.ligar(vm, token)
 
 			result = vms.conectar(vm, token)	
-			time.sleep(2)
+			time.sleep(1)
 
 			if EnableShutdown:
 				shutdown = []
