@@ -26,17 +26,40 @@ import subprocess
 import time
 from dialog import Dialog
 
-LocalInterface = "em1"
-Server = "osdvtserver.example.com"
-ServerPort = 6970
+#################################################
+#################################################
+#################################################
 EnableShutdown = False
+# New spice client (spicy) - "spice-gtk-tools" package.
 spice_client = "/usr/bin/spicy"
+# Old spice client (spicec) - "spice-client" package.
 old_spice_client = "/usr/bin/spicec"
+# VNC client.
 vnc_client = "/usr/bin/vinagre"
 # sudo is necessary to usb_redir
 EnableSudo = True
-
+#################################################
+Server = "osdvtserver.example.com"
+ServerPort = 6970
+LocalInterface = "em1"
 cacert = os.getenv('HOME')+"/osdvt/cacert.pem"
+#################################################
+#################################################
+#################################################
+
+if not os.path.isfile(spice_client):
+        print "New spice client not found (%s). USB redirection will not work. Please, install spice-gtk-tools package. Trying old Client %s..." %(spice_client,old_spice_client)
+        if os.path.isfile(old_spice_client):
+                print "Ok, old Spice Client found (%s)." %(old_spice_client)
+                spice_client = old_spice_client
+        else:  
+                print "Old spice client not found (%s). You can't access your VMs through SPICE protocol." %(old_spice_client)
+
+if not os.path.isfile(vnc_client):
+        print "VNC client not found (%s). You can't access your VMs through VNC protocol." %(vnc_client)
+
+if not EnableSudo:
+        print "Sudo is disabled. 'spicy' client needs root rights to use USB redirection."
 
 class Principal:
 	def get_ip_address(self, ifname):
@@ -134,22 +157,22 @@ class Principal:
                                         cmnd.append("%s" % (data.split()[0]))
                                         cmnd.append("-w")
                                         cmnd.append("%s" % (data.split()[1]))
-					cmnd.append("-f")
+					#cmnd.append("-f")
 
                                 if data.split()[2] == "1":
                                         cmnd.append(vnc_client)
                                         cmnd.append("%s:%s" % (Server,int(data.split()[0])%5900))
-					cmnd.append("-f")
+					#cmnd.append("-f")
 
                         else:
-                                cmnd.append(old_spice_client)
+                                cmnd.append(spice_client)
                                 cmnd.append("-h")
                                 cmnd.append("%s" % (Server))
                                 cmnd.append("-p")
                                 cmnd.append("%s" % (data.split()[0]))
                                 cmnd.append("-w")
                                 cmnd.append("%s" % (data.split()[1]))
-                                cmnd.append("-f")
+                                #cmnd.append("-f")
 
                         subprocess.call(cmnd)
 
