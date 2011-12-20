@@ -39,7 +39,7 @@ spice_client = "/usr/bin/spicy"
 # Old spice client (spicec) - "spice-client" package.
 old_spice_client = "/usr/bin/spicec"
 # VNC client.
-vnc_client = "/usr/bin/vinagrea"
+vnc_client = "/usr/bin/vinagre"
 # sudo is necessary to usb_redir
 EnableSudo = True
 #################################################
