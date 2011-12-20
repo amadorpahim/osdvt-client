@@ -31,14 +31,41 @@ import time
 from threading import Thread
 pygtk.require("2.0")
 
-port = 6970
-cacert = os.getenv('HOME')+"/osdvt/cacert.pem"
+#################################################
+#################################################
+#################################################
+# New spice client (spicy) - "spice-gtk-tools" package.
 spice_client = "/usr/bin/spicy"
+# Old spice client (spicec) - "spice-client" package.
 old_spice_client = "/usr/bin/spicec"
-vnc_client = "/usr/bin/vinagre"
+# VNC client.
+vnc_client = "/usr/bin/vinagrea"
 # sudo is necessary to usb_redir
 EnableSudo = True
+#################################################
+port = 6970
+cacert = os.getenv('HOME')+"/osdvt/cacert.pem"
+#################################################
+#################################################
+#################################################
 
+DisableSpice = False
+DisableVnc = False
+if not os.path.isfile(spice_client):
+	print "New spice client not found (%s). USB redirection will not work. Please, install spice-gtk-tools package. Trying old Client %s..." %(spice_client,old_spice_client)
+	if os.path.isfile(old_spice_client):
+		print "Ok, old Spice Client found (%s)." %(old_spice_client)
+		spice_client = old_spice_client
+	else:
+		DisableSpice = True
+		print "Old spice client not found (%s). You can't access your VMs through SPICE protocol." %(old_spice_client)
+
+if not os.path.isfile(vnc_client):
+	DisableVnc = True
+	print "VNC client not found (%s). You can't access your VMs through VNC protocol." %(vnc_client)
+
+if not EnableSudo:
+	print "Sudo is disabled. 'spicy' client needs root rights to use USB redirection."
 
 def quit(*args, **kwargs):
 	global VarSaida
@@ -116,7 +143,7 @@ class Principal:
 						cmnd.append("-f")
 		
 			else:
-				cmnd.append(old_spice_client)
+				cmnd.append(spice_client)
 				cmnd.append("-h")
 				cmnd.append("%s" % (self._server))
 				cmnd.append("-p")
@@ -166,7 +193,14 @@ class Principal:
 	
 						btn_main_start.set_sensitive(False)
 						btn_main_kill.set_sensitive(True)
-						btn_main_connect.set_sensitive(True)
+
+						if (data.split().__len__() == 1 or data.split()[3] == "SPICE") and DisableSpice is True:
+							btn_main_connect.set_sensitive(False)
+						elif data.split().__len__() > 1 and data.split()[3] == "VNC" and DisableVnc is True:
+							btn_main_connect.set_sensitive(False)
+						else:
+							btn_main_connect.set_sensitive(True)
+				
 					else:
 						status_vm = "Power off"
 						checkbutton1.set_sensitive(True)
