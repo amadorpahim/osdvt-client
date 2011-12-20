@@ -29,6 +29,10 @@ from dialog import Dialog
 #################################################
 #################################################
 #################################################
+Server = "osdvtserver.example.com"
+ServerPort = 6970
+LocalInterface = "em1"
+#################################################
 EnableShutdown = False
 # New spice client (spicy) - "spice-gtk-tools" package.
 spice_client = "/usr/bin/spicy"
@@ -39,9 +43,6 @@ vnc_client = "/usr/bin/vinagre"
 # sudo is necessary to usb_redir
 EnableSudo = True
 #################################################
-Server = "osdvtserver.example.com"
-ServerPort = 6970
-LocalInterface = "em1"
 cacert = os.getenv('HOME')+"/osdvt/cacert.pem"
 #################################################
 #################################################
@@ -143,36 +144,22 @@ class Principal:
                 if data.split()[0] != "ERR":
                         cmnd = []
 
-                        if data.split().__len__() is 3:
+			if EnableSudo:
+				cmnd.append("sudo")
 
-                                if data.split()[2] == "0":
-
-                                        if EnableSudo:
-                                                cmnd.append("sudo")
-
-                                        cmnd.append(spice_client)
-                                        cmnd.append("-h")
-                                        cmnd.append("%s" % (Server))
-                                        cmnd.append("-p")
-                                        cmnd.append("%s" % (data.split()[0]))
-                                        cmnd.append("-w")
-                                        cmnd.append("%s" % (data.split()[1]))
-					#cmnd.append("-f")
-
-                                if data.split()[2] == "1":
-                                        cmnd.append(vnc_client)
-                                        cmnd.append("%s:%s" % (Server,int(data.split()[0])%5900))
-					#cmnd.append("-f")
-
-                        else:
-                                cmnd.append(spice_client)
-                                cmnd.append("-h")
-                                cmnd.append("%s" % (Server))
-                                cmnd.append("-p")
-                                cmnd.append("%s" % (data.split()[0]))
-                                cmnd.append("-w")
-                                cmnd.append("%s" % (data.split()[1]))
-                                #cmnd.append("-f")
+                        if data.split().__len__() is 3 and data.split()[2] == "0" or data.split().__len__() is 2:
+				cmnd.append(spice_client)
+				cmnd.append("-h")
+				cmnd.append("%s" % (Server))
+				cmnd.append("-p")
+				cmnd.append("%s" % (data.split()[0]))
+				cmnd.append("-w")
+				cmnd.append("%s" % (data.split()[1]))
+				cmnd.append("-f")
+			elif data.split().__len__() is 3 and data.split()[2] == "1":
+				cmnd.append(vnc_client)
+				cmnd.append("%s:%s" % (Server,int(data.split()[0])%5900))
+				cmnd.append("-f")
 
                         subprocess.call(cmnd)
 
