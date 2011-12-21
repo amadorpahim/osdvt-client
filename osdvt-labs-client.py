@@ -155,10 +155,10 @@ class Principal:
                 if data.split()[0] != "ERR":
                         cmnd = []
 
-			if EnableSudo:
-				cmnd.append("sudo")
 
                         if data.split().__len__() is 3 and data.split()[2] == "0" or data.split().__len__() is 2:
+				if EnableSudo:
+					cmnd.append("sudo")
 				cmnd.append(spice_client)
 				cmnd.append("-h")
 				cmnd.append("%s" % (Server))
