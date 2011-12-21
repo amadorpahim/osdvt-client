@@ -62,6 +62,17 @@ if not os.path.isfile(vnc_client):
 if not EnableSudo:
         print "Sudo is disabled. 'spicy' client needs root rights to use USB redirection."
 
+
+result = 1
+print "Waiting network..."
+while result != 0:
+	result = subprocess.call("ping -c 2 "+Server, shell=True, stdout=open('/dev/null', 'w'),stderr=subprocess.STDOUT)
+	if result != 0:	
+		print "No answer from %s" % (Server)
+
+
+
+
 class Principal:
 	def get_ip_address(self, ifname):
     		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
