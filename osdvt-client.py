@@ -32,40 +32,30 @@ from threading import Thread
 pygtk.require("2.0")
 
 #################################################
-#################################################
-#################################################
-# New spice client (spicy) - "spice-gtk-tools" package.
-spice_client = "/usr/bin/spicy"
-# Old spice client (spicec) - "spice-client" package.
-old_spice_client = "/usr/bin/spicec"
-# VNC client.
-vnc_client = "/usr/bin/vinagre"
-# sudo is necessary to usb_redir
-EnableSudo = True
-#################################################
 port = 6970
 cacert = os.getenv('HOME')+"/osdvt/cacert.pem"
-#################################################
-#################################################
 #################################################
 
 DisableSpice = False
 DisableVnc = False
-if not os.path.isfile(spice_client):
-	print "New spice client not found (%s). USB redirection will not work. Please, install spice-gtk-tools package. Trying old Client %s..." %(spice_client,old_spice_client)
-	if os.path.isfile(old_spice_client):
-		print "Ok, old Spice Client found (%s)." %(old_spice_client)
-		spice_client = old_spice_client
-	else:
-		DisableSpice = True
-		print "Old spice client not found (%s). You can't access your VMs through SPICE protocol." %(old_spice_client)
 
-if not os.path.isfile(vnc_client):
+if os.path.exists('/usr/bin/spicy'):
+        spice_client='/usr/bin/spicy'
+	EnableSudo = True
+elif os.path.exists('/usr/bin/spicec'):
+        spice_client='/usr/bin/spicec'
+	EnableSudo = False
+else:
+	print 'Spice client not found.'
+	DisableSpice = True
+
+if os.path.exists('/usr/bin/vinagre'):
+        vnc_client='/usr/bin/vinagre'
+elif os.path.exists('/usr/bin/vncviewer'):
+        vnc_client='/usr/bin/vncviewer'
+else:
+	print 'VNC client not found.'
 	DisableVnc = True
-	print "VNC client not found (%s). You can't access your VMs through VNC protocol." %(vnc_client)
-
-if not EnableSudo:
-	print "Sudo is disabled. 'spicy' client needs root rights to use USB redirection."
 
 def quit(*args, **kwargs):
 	global VarSaida
@@ -135,7 +125,7 @@ class Principal:
 					if checkbutton1.get_active():
 						cmnd.append("-f")
 	
-				if data.split()[2] == "1":
+				elif data.split()[2] == "1":
 					cmnd.append(vnc_client)
 					cmnd.append("%s:%s" % (self._server,int(data.split()[0])%5900)) 
 
@@ -180,7 +170,7 @@ class Principal:
 					btn_main_start.set_sensitive(False)
 					btn_main_kill.set_sensitive(False)
 					btn_main_connect.set_sensitive(False)
-					sta_main.push(0,"Server was restarted. Please click 'Refresh'.")
+					sta_main.push(0,"Server seems like restarted. Please click 'Refresh'.")
 					
 
 				else:
