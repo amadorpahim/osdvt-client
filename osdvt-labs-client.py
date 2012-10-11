@@ -29,49 +29,44 @@ from dialog import Dialog
 #################################################
 #################################################
 #################################################
-Server = "osdvtserver.example.com"
+Server = "server.example.com"
 ServerPort = 6970
 LocalInterface = "em1"
 #################################################
 EnableShutdown = False
-# New spice client (spicy) - "spice-gtk-tools" package.
-spice_client = "/usr/bin/spicy"
-# Old spice client (spicec) - "spice-client" package.
-old_spice_client = "/usr/bin/spicec"
-# VNC client.
-vnc_client = "/usr/bin/vinagre"
-# sudo is necessary to usb_redir
-EnableSudo = True
 #################################################
 cacert = os.getenv('HOME')+"/osdvt/cacert.pem"
 #################################################
 #################################################
 #################################################
 
-if not os.path.isfile(spice_client):
-        print "New spice client not found (%s). USB redirection will not work. Please, install spice-gtk-tools package. Trying old Client %s..." %(spice_client,old_spice_client)
-        if os.path.isfile(old_spice_client):
-                print "Ok, old Spice Client found (%s)." %(old_spice_client)
-                spice_client = old_spice_client
-        else:  
-                print "Old spice client not found (%s). You can't access your VMs through SPICE protocol." %(old_spice_client)
+DisableSpice = False
+DisableVnc = False
 
-if not os.path.isfile(vnc_client):
-        print "VNC client not found (%s). You can't access your VMs through VNC protocol." %(vnc_client)
+if os.path.exists('/usr/bin/spicy'):
+        spice_client='/usr/bin/spicy'
+        EnableSudo = True
+elif os.path.exists('/usr/bin/spicec'):
+        spice_client='/usr/bin/spicec'
+        EnableSudo = False
+else:   
+        print 'Spice client not found.'
+        DisableSpice = True
 
-if not EnableSudo:
-        print "Sudo is disabled. 'spicy' client needs root rights to use USB redirection."
-
+if os.path.exists('/usr/bin/vinagre'):
+        vnc_client='/usr/bin/vinagre'
+elif os.path.exists('/usr/bin/vncviewer'):
+        vnc_client='/usr/bin/vncviewer'
+else:
+        print 'VNC client not found.'
+        DisableVnc = True
 
 result = 1
 print "Waiting network..."
 while result != 0:
-	result = subprocess.call("ping -c 2 "+Server, shell=True, stdout=open('/dev/null', 'w'),stderr=subprocess.STDOUT)
+	result = subprocess.call("ping -c 1 "+Server, shell=True, stdout=open('/dev/null', 'w'),stderr=subprocess.STDOUT)
 	if result != 0:	
 		print "No answer from %s" % (Server)
-
-
-
 
 class Principal:
 	def get_ip_address(self, ifname):
